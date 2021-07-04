@@ -79,6 +79,12 @@ exports.postEditProfile = async (req, res) => {
 exports.postBlock = async (req, res) => {
   const blockedUser = req.query.user;
 
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(404).render("error/404.ejs");
+  }
+
   // block and unfollow the user
   if (req.user.blockedList.includes(blockedUser)) {
     const blockedIndex = req.user.blockedList.findIndex(
@@ -86,6 +92,8 @@ exports.postBlock = async (req, res) => {
     );
     if (blockedIndex > -1) {
       req.user.blockedList.splice(blockedIndex, 1);
+    } else {
+      return res.status(404).render("error/404.ejs");
     }
 
     const followingIndex = req.user.following.findIndex(
@@ -111,12 +119,20 @@ exports.postBlock = async (req, res) => {
 exports.postFollow = async (req, res) => {
   const followedUser = req.query.user;
 
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(404).render("error/404.ejs");
+  }
+
   if (req.user.following.includes(followedUser)) {
     const followingIndex = req.user.following.findIndex(
       (v) => v === followedUser
     );
     if (followingIndex > -1) {
       req.user.following.splice(followingIndex, 1);
+    } else {
+      return res.status(404).render("error/404.ejs");
     }
 
     await req.user.save();
