@@ -1,0 +1,35 @@
+<%- include("../../partials/head.ejs", {
+    docTitle: "Edit Profile | Connect Social Media",
+    activeTab: "account",
+}) %>
+
+
+  <div class="p-4 mt-4 mb-4 bg-light rounded border border-dark">
+    <h1>Edit Profile</h1>
+
+    <hr class="my-4" />
+
+    <% if(formErrors.length > 0) { %>
+      <% formErrors.forEach(({msg}) => { %> 
+        <%- include('../../partials/formError.ejs', { msg }) %> 
+      <% }) %>
+    <% } %>
+    
+    <form action="/profile/edit" method="post" class="w-100">
+      <div class="mb-3">
+        <label for="bio" class="form-label" rows="4">Bio</label>
+        <textarea class="form-control mb-4" id="bio" name="bio"><%= prevValues.bio %></textarea>
+      </div>
+
+      <input hidden name="_csrf" value="<%= csrfToken %>" />
+
+      <hr class="my-4" />
+
+
+      <button class="btn btn-primary">Submit Changes</button>
+    </form>
+
+
+  </div>
+
+<%- include("../../partials/foot.ejs") %>

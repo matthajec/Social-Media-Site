@@ -1,4 +1,7 @@
-<%- include("../partials/head.ejs") %>
+<%- include("../partials/head.ejs", {
+  docTitle: "Sign Up | Connect Social Media",
+  activeTab: "signup"
+}) %>
 
   <form action="/signup" method="post" class="mt-5">
     <h1>Sign up</h1>
@@ -13,10 +16,8 @@
       <label for="email" class="form-label">Email</label>
       <input
         class="form-control"
-        type="text"
         name="email"
         id="email"
-        aria-describedby="email"
         value="<%= prevValues.email %>"
       />
       <div id="emailHelp" class="form-text">
@@ -28,10 +29,8 @@
       <label for="username" class="form-label">Username</label>
       <input
         class="form-control"
-        type="text"
         name="username"
         id="username"
-        aria-describedby="username"
         value="<%= prevValues.username %>"
       />
     </div>
@@ -40,11 +39,12 @@
       <label for="password" class="form-label">Password</label>
       <input 
         class="form-control" 
-        type="password" 
         name="password"
+        type="password" 
         id="password" 
       />
     </div>
+
     <div class="mb-3 form-check">
       <input 
         type="checkbox" 
@@ -57,11 +57,13 @@
         there is still an above average chance this site has unkown
         vulnerabilites. I will not put any information into this site that I am
         not willing to make public (including passwords, use a unique and
-        unrelated one!)</label
-      >
+        unrelated one!)
+      </label>
     </div>
     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
     <button type="submit" class="btn btn-primary">Sign Up</button>
+
+    <p class="mt-2">Already registered? <a href="/login">Login</a> instead.</p>
   </form>
 
 <%- include("../partials/foot.ejs") %>

@@ -14,6 +14,20 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  bio: {
+    type: String,
+    default: "I'm a mysterious person...",
+  },
+  blockedList: [
+    {
+      type: String,
+    },
+  ],
+  following: [
+    {
+      type: String,
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -71,8 +71,14 @@ app.use((req, res, next) => {
 // =============================================================================
 
 const authRoutes = require("./routes/auth");
+const socialRoutes = require("./routes/social");
 
 app.use(authRoutes);
+app.use(socialRoutes);
+
+app.use((req, res) => {
+  res.render("error/404.ejs");
+});
 
 // SERVER / DATABASE CONNECTION
 // =============================================================================

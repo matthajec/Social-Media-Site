@@ -1,0 +1,69 @@
+<%- include("../../partials/head.ejs", {
+  docTitle: "Profile | Connect Social Media",
+  activeTab: "account"
+}) %>
+
+  <div class="p-4 mt-4 mb-4 bg-light rounded border border-dark d-flex">
+    <div>
+      <img src="https://via.placeholder.com/150" class="img-thumbnail" alt="profile picture" /> 
+    </div>
+    <div class="ms-4 w-50">
+      <h1><%= user.username %></h1>
+      <% if(isBlocked) { %>
+        <p class="text-danger">
+          You have blocked this user. If their accont contains illegal or offensive content, please report them immediately.
+        </p>
+      <% } else { %>
+        <p class="text-break">
+          <%= user.bio %>
+        </p>
+      <% } %>
+    </div>
+
+    <div class="flex-grow-1 d-flex justify-content-end">
+      <% if(isOwnProfile) { %>
+        <div>
+          <a href="/profile/edit" class="me-1 btn btn-primary">Edit Profile</a>
+        </div>
+      <% } else { %>
+        <div>
+          <form 
+            class="d-inline-block" 
+            action="/profile/follow?user=<%= user.username %>" 
+            method="post"
+          >
+            <input hidden name="_csrf" value="<%= csrfToken %>" />
+            <button 
+              class="me-1 btn btn-primary <% if(isBlocked) { %>disabled<% } %>"
+            >
+              <% if(isFollowing) { %>Unfollow<% } else { %>Follow<% } %>
+            </button>
+          </form>
+
+          <form 
+            class="d-inline-block" 
+            action="/profile/block?user=<%= user.username %>" 
+            method="post"
+          >
+            <input hidden name="_csrf" value="<%= csrfToken %>" />
+            <button class="me-1 btn btn-secondary">
+              <% if(isBlocked) { %>Unblock<% } else { %>Block<% } %>
+            </button>
+          </form>
+
+          <button class="btn btn-danger">Report</button>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <% if(isOwnProfile) { %>
+  <div class="d-flex justify-content-center">
+    <button class="btn btn-primary mt-1 py-2 text-center w-50">
+      <p class="h3">New Post</p>
+    </button>
+  </div>
+  <% } %>
+
+
+<%- include("../../partials/foot.ejs") %>

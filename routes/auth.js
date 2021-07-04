@@ -4,6 +4,7 @@ const { body, checkSchema } = require("express-validator");
 const authController = require("../controllers/auth");
 const User = require("../models/user");
 const redirectAuth = require("../middleware/redirectAuth");
+const redirectUnauth = require("../middleware/redirectUnauth");
 
 const router = express.Router();
 
@@ -125,5 +126,10 @@ router.post(
   }),
   authController.postLogin
 );
+
+// Logout
+// =============================================================================
+
+router.post("/logout", redirectUnauth("/login"), authController.postLogout);
 
 module.exports = router;

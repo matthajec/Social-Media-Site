@@ -1,5 +1,3 @@
-// TODO: look over all this code. it's all just a rough proof of concept, you'll add a lot and rewrite a lot
-
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
 
@@ -8,11 +6,8 @@ const User = require("../models/user");
 // Signup
 // =============================================================================
 
-const signupDocTitle = "Signup | Connect Social Media";
-
 exports.getSignup = (req, res) => {
   res.render("auth/signup.ejs", {
-    docTitle: signupDocTitle,
     formErrors: [],
     prevValues: {
       email: "",
@@ -29,8 +24,7 @@ exports.postSignup = async (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.render("auth/signup.ejs", {
-      docTitle: signupDocTitle,
+    return res.status(422).render("auth/signup.ejs", {
       formErrors: errors.errors,
       prevValues: {
         email,
@@ -58,11 +52,8 @@ exports.postSignup = async (req, res) => {
 // Login
 // =============================================================================
 
-const loginDocTitle = "Login | Connect Social Media";
-
 exports.getLogin = (req, res) => {
   res.render("auth/login.ejs", {
-    docTitle: loginDocTitle,
     formErrors: [],
     prevValues: {
       email: "",
@@ -77,8 +68,7 @@ exports.postLogin = async (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.render("auth/login.ejs", {
-      docTitle: loginDocTitle,
+    return res.status(422).render("auth/login.ejs", {
       formErrors: errors.errors,
       prevValues: {
         email,
@@ -91,8 +81,7 @@ exports.postLogin = async (req, res) => {
   });
 
   if (!user) {
-    return res.render("auth/login.ejs", {
-      docTitle: loginDocTitle,
+    return res.status(422).render("auth/login.ejs", {
       formErrors: [{ msg: "There is no account with that email address" }],
       prevValues: {
         email,
@@ -106,12 +95,20 @@ exports.postLogin = async (req, res) => {
       await req.session.save();
       return res.redirect("/");
     }
-    return res.render("auth/login.ejs", {
-      docTitle: loginDocTitle,
+    return res.status(422).render("auth/login.ejs", {
       formErrors: [{ msg: "Wrong password" }],
       prevValues: {
         email,
       },
     });
   });
+};
+
+// Logout
+// =============================================================================
+
+exports.postLogout = async (req, res) => {
+  req.session.userId = undefined;
+  await req.session.save();
+  res.redirect("/login");
 };
