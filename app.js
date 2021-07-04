@@ -17,6 +17,8 @@ const MongoStore = require("connect-mongo");
 const app = express();
 const csrfProtection = csurf({ cookie: true }); // a cookie is be used because otherwise every session is modified (and therefore saved) when the csrf token is set
 
+const User = require("./models/user");
+
 // EXPRESS SETTINGS
 // =============================================================================
 
@@ -25,6 +27,7 @@ app.set("view engine", "ejs");
 // MIDDLEWARE
 // =============================================================================
 
+app.use("/static", express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   session({
@@ -37,12 +40,32 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.ENVIROMENT === "production" ? true : false,
-      maxAge: 1000 * 60 * 60 * 24 * 30, // the cookie is valid for 30 days
+      maxAge:
+        process.env.ENVIROMENT === "production"
+          ? 1000 * 60 * 60 * 24 * 30
+          : undefined,
     },
   })
 );
 app.use(cookieParser());
 app.use(csrfProtection);
+
+app.use(async (req, res, next) => {
+  if (!req.session.userId) {
+    return next();
+  }
+  const user = await User.findById(req.session.userId);
+  req.user = user;
+  next();
+});
+
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  res.locals.isAuthenticated = req.user ? true : false;
+  res.locals.docTitle = "Connect Social Media";
+  res.locals.activeTab = "home";
+  next();
+});
 
 // ROUTES
 // =============================================================================

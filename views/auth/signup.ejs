@@ -1,21 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <form action="/signup" method="POST">
-      <input hidden name="_csrf" value="<%= csrfToken %>" />
-      username:
-      <input name="username" />
-      email:
-      <input name="email" />
-      password:
-      <input name="password" />
-      <button>Submit</button>
-    </form>
-  </body>
-</html>
+<%- include("../partials/head.ejs") %>
+
+  <form action="/signup" method="post" class="mt-5">
+    <h1>Sign up</h1>
+
+    <% if(formErrors.length > 0) { %>
+      <% formErrors.forEach(({msg}) => { %> 
+        <%- include('../partials/formError.ejs', { msg }) %> 
+      <% }) %>
+    <% } %>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        class="form-control"
+        type="text"
+        name="email"
+        id="email"
+        aria-describedby="email"
+        value="<%= prevValues.email %>"
+      />
+      <div id="emailHelp" class="form-text">
+        We'll never share your email with anyone else.
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input
+        class="form-control"
+        type="text"
+        name="username"
+        id="username"
+        aria-describedby="username"
+        value="<%= prevValues.username %>"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input 
+        class="form-control" 
+        type="password" 
+        name="password"
+        id="password" 
+      />
+    </div>
+    <div class="mb-3 form-check">
+      <input 
+        type="checkbox" 
+        class="form-check-input" 
+        id="acknowledgement" 
+        name="acknowledgement" 
+      />
+      <label class="form-check-label" for="acknowledgement"
+        >I acknowledge this is a students project and although try to prevent them
+        there is still an above average chance this site has unkown
+        vulnerabilites. I will not put any information into this site that I am
+        not willing to make public (including passwords, use a unique and
+        unrelated one!)</label
+      >
+    </div>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+  </form>
+
+<%- include("../partials/foot.ejs") %>
