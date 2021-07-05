@@ -108,7 +108,6 @@ exports.postLogin = async (req, res) => {
 // =============================================================================
 
 exports.postLogout = async (req, res) => {
-  req.session.userId = undefined;
-  await req.session.save();
+  await req.session.destroy();
   res.redirect("/login");
 };

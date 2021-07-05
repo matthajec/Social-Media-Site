@@ -55,6 +55,11 @@ app.use(async (req, res, next) => {
     return next();
   }
   const user = await User.findById(req.session.userId);
+
+  if (!user) {
+    req.session.destroy();
+  }
+
   req.user = user;
   next();
 });
