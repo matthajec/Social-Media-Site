@@ -1,0 +1,23 @@
+<%- include("../partials/head.ejs", {
+  docTitle: "Report Successful | Connect Social Media",
+  activeTab: null,
+}) %>
+
+<div class="mt-5 text-center">
+  <h1>Successfully reported user <%= reportedUser.username %></h1>
+  <h2 class="text-secondary m-3">Proper action will be taken after an investigation of the offending content/account.</h2>
+  <h2 class="text-secondary m-3">You can block the user without viewing the content of their profile by clicking the button below.</h2>
+
+  <form 
+    class="my-4"
+    action="/profile/block?user=<%= reportedUser.username %>&onlyBlock=1" 
+    method="post"
+  >
+    <input hidden name="_csrf" value="<%= csrfToken %>" />
+    <button class="me-1 btn btn-secondary">Block</button>
+  </form>
+
+  <a href="/">Go back home.</a>
+</div>
+
+<%- include("../partials/foot.ejs") %>

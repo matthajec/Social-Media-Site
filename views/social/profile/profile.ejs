@@ -14,7 +14,7 @@
           You have blocked this user. If their accont contains illegal or offensive content, please report them immediately.
         </p>
       <% } else { %>
-        <p class="text-break">
+        <p class="text-break mh-100px">
           <%= user.bio %>
         </p>
       <% } %>
@@ -51,7 +51,7 @@
             </button>
           </form>
 
-          <button class="btn btn-danger">Report</button>
+          <a class="btn btn-danger" href="/report/user?user=<%= user.username %>">Report</a>
         </div>
       <% } %>
     </div>

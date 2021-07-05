@@ -78,6 +78,7 @@ exports.postEditProfile = async (req, res) => {
 // toggles block state
 exports.postBlock = async (req, res) => {
   const blockedUser = req.query.user;
+  const onlyBlock = req.query.onlyBlock;
 
   const errors = validationResult(req);
 
@@ -85,30 +86,31 @@ exports.postBlock = async (req, res) => {
     return res.status(404).render("error/404.ejs");
   }
 
-  // block and unfollow the user
   if (req.user.blockedList.includes(blockedUser)) {
-    const blockedIndex = req.user.blockedList.findIndex(
-      (v) => v === blockedUser
-    );
-    if (blockedIndex > -1) {
-      req.user.blockedList.splice(blockedIndex, 1);
-    } else {
-      return res.status(404).render("error/404.ejs");
+    // unblock the user if onlyBlock is not set to one
+    if (onlyBlock != 1) {
+      const blockedIndex = req.user.blockedList.findIndex(
+        (v) => v === blockedUser
+      );
+      if (blockedIndex > -1) {
+        req.user.blockedList.splice(blockedIndex, 1);
+      } else {
+        return res.status(404).render("error/404.ejs");
+      }
     }
-
+  } else {
+    // block the user
     const followingIndex = req.user.following.findIndex(
       (v) => v === blockedUser
     );
     if (followingIndex > -1) {
-      req.user.following.splice(followignIndex, 1);
+      req.user.following.splice(followingIndex, 1);
     }
 
-    await req.user.save();
-  } else {
     req.user.blockedList.push(blockedUser);
-    await req.user.save();
   }
 
+  await req.user.save();
   res.redirect("/profile?user=" + blockedUser);
 };
 

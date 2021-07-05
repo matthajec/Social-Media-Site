@@ -1,0 +1,60 @@
+<%- include("../partials/head.ejs", {
+  docTitle: "Report User | Connect Social Media",
+  activeTab: "",
+}) %>
+
+
+<div class="p-4 mt-4 mb-4 bg-light rounded border border-dark">
+  <h1>Reporting user: <%= reportedUser.username %></h1>
+
+  <hr class="my-4" />
+
+  <% if(formErrors.length > 0) { %>
+    <% formErrors.forEach(({msg}) => { %> 
+      <%- include('../partials/formError.ejs', { msg }) %> 
+    <% }) %>
+  <% } %>
+  
+  
+  <form action="/report/user?user=<%= reportedUser.username %>" method="post" class="w-100">
+    <div class="mb-3">
+      <label for="reason" class="form-label">Reason For Report (if there are multiple, select the one closest to the bottom of the list)</label>
+      <select class="form-control" id="reason" name="reason">
+        <option 
+          value="offensive" 
+          <% if(prevValues.reason === "offensive") { %>selected<% } %>
+        >
+          Offensive Content
+        </option>
+        <option 
+          value="harassment"
+          <% if(prevValues.reason === "harassment") { %>selected<% } %>
+        >
+          Targeted Harassment
+        </option>
+        <option 
+          value="illegal"
+          <% if(prevValues.reason === "illegal") { %>selected<% } %>
+        >
+          Illegal Content
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="details" class="form-label">More Details (optional, max 1500 characters)</label>
+      <textarea class="form-control w-100" id="details" name="details"><% prevValues.details %></textarea>
+    </div>
+
+    <input hidden name="_csrf" value="<%= csrfToken %>" />
+
+    <hr class="my-4" />
+
+
+    <button class="btn btn-primary">Submit Report</button>
+  </form>
+
+
+</div>
+
+<%- include("../partials/foot.ejs") %>

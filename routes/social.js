@@ -1,5 +1,5 @@
 const express = require("express");
-const { param, query, checkSchema } = require("express-validator");
+const { query, checkSchema } = require("express-validator");
 
 const redirectUnauth = require("../middleware/redirectUnauth");
 
@@ -32,12 +32,13 @@ router.get(
 
 router.post(
   "/profile/edit",
+  redirectUnauth("/login"),
   checkSchema({
     bio: {
       in: ["body"],
       isLength: {
-        errorMessage: "Bio must be 140 characters or less",
-        options: { max: 140 },
+        errorMessage: "Bio must be 220 characters or less",
+        options: { max: 220 },
       },
     },
   }),
@@ -50,6 +51,7 @@ router.post(
 
 router.post(
   "/profile/block",
+  redirectUnauth("/login"),
   query("user").notEmpty().isAlphanumeric(),
   socialController.postBlock
 );
@@ -59,6 +61,7 @@ router.post(
 
 router.post(
   "/profile/follow",
+  redirectUnauth("/login"),
   query("user").notEmpty().isAlphanumeric(),
   socialController.postFollow
 );

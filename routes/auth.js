@@ -14,6 +14,7 @@ const router = express.Router();
 router.get("/signup", redirectAuth("/"), authController.getSignup);
 router.post(
   "/signup",
+  redirectUnauth("/login"),
   checkSchema({
     email: {
       in: ["body"],
@@ -100,6 +101,7 @@ router.post(
 router.get("/login", redirectAuth("/"), authController.getLogin);
 router.post(
   "/login",
+  redirectUnauth("/login"),
   checkSchema({
     email: {
       notEmpty: {
