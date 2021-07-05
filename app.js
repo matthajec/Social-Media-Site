@@ -57,10 +57,11 @@ app.use(async (req, res, next) => {
   const user = await User.findById(req.session.userId);
 
   if (!user) {
-    req.session.destroy();
+    await req.session.destroy();
+  } else {
+    req.user = user;
   }
 
-  req.user = user;
   next();
 });
 
