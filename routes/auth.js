@@ -29,10 +29,7 @@ router.post(
       normalizeEmail: {},
       custom: {
         options: async (value) => {
-          const existingUser = await User.findOne({
-            $or: [{ email: email }, { username: username }],
-          });
-
+          const existingUser = await User.findOne({ email: value });
           if (existingUser) {
             if (existingUser.email === value) {
               throw new Error("An account with that email already exists");
@@ -58,10 +55,12 @@ router.post(
       },
       custom: {
         options: async (value) => {
-          const existingUser = await User.findOne({ username: username });
+          const existingUser = await User.findOne({
+            username_lower: value.toLowerCase(),
+          });
 
           if (existingUser) {
-            if (existingUser.username === value) {
+            if (existingUser.username_lower === value) {
               throw new Error("An account with that username already exists");
             }
           }

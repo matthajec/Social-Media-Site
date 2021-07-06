@@ -2,3 +2,10 @@
   max-height: 100px;
   overflow: scroll;
 }
+
+.text-username {
+  max-width: 70%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

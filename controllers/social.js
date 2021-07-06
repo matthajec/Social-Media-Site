@@ -12,14 +12,15 @@ exports.getHome = (req, res) => {
 // =============================================================================
 
 exports.getProfile = async (req, res) => {
-  const username = req.query.user;
+  let username = (req.query.user || "").toLowerCase();
   let user = req.user;
   let isOwnProfile = true;
   let isBlocked = user.blockedList.includes(username);
   let isFollowing = false;
+  let isFollowingBack = false;
 
   if (username && username !== req.user.username) {
-    const foundUser = await User.findOne({ username: username });
+    const foundUser = await User.findOne({ username_lower: username });
 
     if (!foundUser) {
       return res.status(404).render("error/404.ejs");
@@ -27,6 +28,10 @@ exports.getProfile = async (req, res) => {
 
     if (req.user.following.includes(username)) {
       isFollowing = true;
+    }
+
+    if (req.user.followers.includes(username)) {
+      isFollowingBack = true;
     }
 
     isOwnProfile = false;
@@ -38,6 +43,7 @@ exports.getProfile = async (req, res) => {
     isOwnProfile,
     isBlocked,
     isFollowing,
+    isFollowingBack,
   });
 };
 
@@ -77,7 +83,9 @@ exports.postEditProfile = async (req, res) => {
 
 // toggles block state
 exports.postBlock = async (req, res) => {
-  const blockedUser = req.query.user;
+  const username = (req.query.user || "").toLowerCase();
+  const targetUser = await User.findOne({ username_lower: username });
+
   const onlyBlock = req.query.onlyBlock;
 
   const errors = validationResult(req);
@@ -86,32 +94,35 @@ exports.postBlock = async (req, res) => {
     return res.status(404).render("error/404.ejs");
   }
 
-  if (req.user.blockedList.includes(blockedUser)) {
+  if (req.user.blockedList.includes(targetUser.username_lower)) {
     // unblock the user if onlyBlock is not set to one
     if (onlyBlock != 1) {
-      const blockedIndex = req.user.blockedList.findIndex(
-        (v) => v === blockedUser
+      const targetUserIndex = req.user.blockedList.findIndex(
+        (v) => v === targetUser.username_lower
       );
-      if (blockedIndex > -1) {
-        req.user.blockedList.splice(blockedIndex, 1);
-      } else {
-        return res.status(404).render("error/404.ejs");
-      }
+      req.user.blockedList.splice(targetUserIndex, 1);
     }
   } else {
     // block the user
-    const followingIndex = req.user.following.findIndex(
-      (v) => v === blockedUser
+    const targetUserIndex = req.user.following.findIndex(
+      (v) => v === targetUser.username_lower
     );
-    if (followingIndex > -1) {
-      req.user.following.splice(followingIndex, 1);
+    if (targetUserIndex > -1) {
+      req.user.following.splice(targetUserIndex, 1);
     }
 
-    req.user.blockedList.push(blockedUser);
+    const indexInTargetUser = targetUser.followers.findIndex(
+      (v) => v === req.user.username_lower
+    );
+    if (indexInTargetUser > -1) {
+      targetUser.followers.splice(indexInTargetUser, 1);
+    }
+
+    req.user.blockedList.push(targetUser.username_lower);
   }
 
-  await req.user.save();
-  res.redirect("/profile?user=" + blockedUser);
+  await Promise.all([req.user.save()], targetUser.save());
+  res.redirect("/profile?user=" + targetUser.username_lower);
 };
 
 // Follow
@@ -119,29 +130,37 @@ exports.postBlock = async (req, res) => {
 
 // toggles following state
 exports.postFollow = async (req, res) => {
-  const followedUser = req.query.user;
-
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(404).render("error/404.ejs");
   }
 
-  if (req.user.following.includes(followedUser)) {
-    const followingIndex = req.user.following.findIndex(
-      (v) => v === followedUser
-    );
-    if (followingIndex > -1) {
-      req.user.following.splice(followingIndex, 1);
-    } else {
-      return res.status(404).render("error/404.ejs");
-    }
+  const username = (req.query.user || "").toLowerCase();
+  const targetUser = await User.findOne({ username_lower: username });
 
-    await req.user.save();
-  } else {
-    req.user.following.push(followedUser);
-    await req.user.save();
+  if (!targetUser) {
+    return res.status(404).render("error/404.ejs");
   }
 
-  res.redirect("/profile?user=" + followedUser);
+  // unfollow the user if they're already being followed, follow if they're not
+  if (req.user.following.includes(targetUser.username_lower)) {
+    const targetUserIndex = req.user.following.findIndex(
+      (v) => v === targetUser.username_lower
+    );
+    req.user.following.splice(targetUserIndex, 1);
+
+    const indexInTargetUser = targetUser.followers.findIndex(
+      (v) => v === req.user.username_lower
+    );
+    if (indexInTargetUser > -1) {
+      targetUser.followers.splice(indexInTargetUser, 1);
+    }
+  } else {
+    req.user.following.push(targetUser.username_lower);
+    targetUser.followers.push(req.user.username_lower);
+  }
+
+  await Promise.all([req.user.save(), targetUser.save()]);
+  res.redirect("/profile?user=" + targetUser.username_lower);
 };

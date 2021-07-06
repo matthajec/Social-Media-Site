@@ -7,6 +7,16 @@ const reportSchema = new Schema(
       type: String,
       required: true,
     },
+    by: {
+      type: String,
+      required: true,
+    },
+    likedBy: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
   },
   { timestamps: true }
 );

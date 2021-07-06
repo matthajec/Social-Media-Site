@@ -8,7 +8,10 @@
       <img src="https://via.placeholder.com/150" class="img-thumbnail" alt="profile picture" /> 
     </div>
     <div class="ms-4 w-50">
-      <h1><%= user.username %></h1>
+      <h1 class="d-inline-block text-username"><%= user.username %></h1>
+      <% if(isFollowingBack) { %>
+        <strong class="ms-2 text-success">Follows you</strong>
+      <% } %>
       <% if(isBlocked) { %>
         <p class="text-danger">
           You have blocked this user. If their accont contains illegal or offensive content, please report them immediately.

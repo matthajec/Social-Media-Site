@@ -38,6 +38,7 @@ exports.postSignup = async (req, res) => {
   const newUser = new User({
     email: email,
     username: username,
+    username_lower: username.toLowerCase(),
     password: hashedPassword,
   });
 
