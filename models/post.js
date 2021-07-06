@@ -1,24 +1,22 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const reportSchema = new Schema(
+const postSchema = new Schema(
   {
-    content: {
+    body: {
       type: String,
       required: true,
     },
     by: {
-      type: String,
-      required: true,
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
-    likedBy: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
+    likes: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Report", reportSchema);
+module.exports = mongoose.model("Post", postSchema);

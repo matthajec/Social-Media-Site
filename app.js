@@ -78,11 +78,15 @@ app.use((req, res, next) => {
 
 const authRoutes = require("./routes/auth");
 const socialRoutes = require("./routes/social");
+const profileRoutes = require("./routes/profile");
 const reportRoutes = require("./routes/report");
+const postRoutes = require("./routes/post");
 
 app.use(authRoutes);
 app.use(socialRoutes);
+app.use("/profile", profileRoutes);
 app.use("/report", reportRoutes);
+app.use("/post", postRoutes);
 
 app.use((req, res) => {
   res.render("error/404.ejs");

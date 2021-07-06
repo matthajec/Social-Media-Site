@@ -3,4 +3,10 @@
   activeTab: "home"
 }) %>
 
+<% posts.forEach(p => { %>
+  <%- include("../partials/post.ejs", {
+    body: p.body
+  }) %>
+<% }) %>
+
 <%- include("../partials/foot.ejs") %>
