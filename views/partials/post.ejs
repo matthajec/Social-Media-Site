@@ -1,3 +1,12 @@
-<div class="p-4 mt-4 mb-4 bg-light rounded border border-dark d-flex">
-  <p><%= body %></p>
+<div class="p-4  mt-4 mb-4 bg-light rounded border border-dark d-flex">
+  <a href="/profile?user=<%= user.username %>">
+    <div>
+      <img src="https://via.placeholder.com/150" class="img-thumbnail" alt="profile picture" /> 
+      <p class="h5 pb-0 m-0 text-center mt-1"><%= user.username %></p>
+    </div>
+  </a>
+
+  <div>
+    <p class="ms-4 mt-2 h5 text-break mh-100px"><%= post.body %></p>
+  </div>
 </div>

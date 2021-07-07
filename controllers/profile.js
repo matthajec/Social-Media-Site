@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
 const Posts = require("../models/post");
+const mongoose = require("mongoose");
 
 // Profile
 // =============================================================================
@@ -9,7 +10,7 @@ exports.getProfile = async (req, res) => {
   let username = (req.query.user || "").toLowerCase();
   let user = req.user;
   let isOwnProfile = true;
-  let isBlocked = user.blockedList.includes(username);
+  let isBlocked = false;
   let isFollowing = false;
   let isFollowingBack = false;
 
@@ -20,11 +21,15 @@ exports.getProfile = async (req, res) => {
       return res.status(404).render("error/404.ejs");
     }
 
-    if (req.user.following.includes(username)) {
+    const id = foundUser._id.toString();
+
+    isBlocked = user.blockedList.includes(id);
+
+    if (req.user.following.includes(id)) {
       isFollowing = true;
     }
 
-    if (req.user.followers.includes(username)) {
+    if (req.user.followers.includes(id)) {
       isFollowingBack = true;
     }
 
@@ -93,31 +98,32 @@ exports.postBlock = async (req, res) => {
     return res.status(404).render("error/404.ejs");
   }
 
-  if (req.user.blockedList.includes(targetUser.username_lower)) {
+  if (req.user.blockedList.includes(targetUser._id)) {
     // unblock the user if onlyBlock is not set to one
     if (onlyBlock != 1) {
       const targetUserIndex = req.user.blockedList.findIndex(
-        (v) => v === targetUser.username_lower
+        (v) => v.toString() === targetUser._id.toString()
       );
       req.user.blockedList.splice(targetUserIndex, 1);
     }
   } else {
     // block the user
     const targetUserIndex = req.user.following.findIndex(
-      (v) => v === targetUser.username_lower
+      (v) => v.toString() === targetUser._id.toString()
     );
     if (targetUserIndex > -1) {
       req.user.following.splice(targetUserIndex, 1);
     }
 
-    const indexInTargetUser = targetUser.followers.findIndex(
-      (v) => v === req.user.username_lower
-    );
+    const indexInTargetUser = targetUser.followers.findIndex((v) => {
+      return v.toString() === req.user._id.toString();
+    });
+    console.log(indexInTargetUser);
     if (indexInTargetUser > -1) {
       targetUser.followers.splice(indexInTargetUser, 1);
     }
 
-    req.user.blockedList.push(targetUser.username_lower);
+    req.user.blockedList.push(targetUser._id);
   }
 
   await Promise.all([req.user.save()], targetUser.save());
@@ -143,21 +149,21 @@ exports.postFollow = async (req, res) => {
   }
 
   // unfollow the user if they're already being followed, follow if they're not
-  if (req.user.following.includes(targetUser.username_lower)) {
+  if (req.user.following.includes(targetUser._id)) {
     const targetUserIndex = req.user.following.findIndex(
-      (v) => v === targetUser.username_lower
+      (v) => v.toString() === targetUser._id.toString()
     );
     req.user.following.splice(targetUserIndex, 1);
 
     const indexInTargetUser = targetUser.followers.findIndex(
-      (v) => v === req.user.username_lower
+      (v) => v.toString() === req.user._id.toString()
     );
     if (indexInTargetUser > -1) {
       targetUser.followers.splice(indexInTargetUser, 1);
     }
   } else {
-    req.user.following.push(targetUser.username_lower);
-    targetUser.followers.push(req.user.username_lower);
+    req.user.following.push(targetUser._id);
+    targetUser.followers.push(req.user._id);
   }
 
   await Promise.all([req.user.save(), targetUser.save()]);

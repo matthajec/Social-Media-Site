@@ -74,7 +74,8 @@
 
   <% posts.forEach(p => { %>
     <%- include("../partials/post.ejs", {
-      body: p.body
+      post: p,
+      user: user
     }) %>
   <% }) %>
 

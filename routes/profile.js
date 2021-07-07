@@ -12,7 +12,7 @@ const router = express.Router();
 router.get(
   "/",
   redirectUnauth("/login"),
-  query("username").isAlphanumeric(),
+  query("user").isAlphanumeric(),
   profileController.getProfile
 );
 

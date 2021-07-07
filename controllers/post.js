@@ -17,7 +17,9 @@ exports.postPost = async (req, res) => {
     by: req.user._id,
   });
 
-  await newPost.save();
+  req.user.lastPostAt = new Date(Date.now());
+
+  await Promise.all([newPost.save(), req.user.save()]);
 
   res.redirect("/profile");
 };

@@ -1,0 +1,19 @@
+<%- include("../partials/head.ejs", {
+  docTitle: "Feed | Connect Social Media",
+  activeTab: "feed"
+}) %>
+
+<h1 class="mt-4 text-center">Your feed</h1>
+
+<% if(posts.length < 1) { %>
+  <p class="h3 text-center mt-3">Uh oh. Your feed is empty! Go to discover or use the search box to find people to follow.</p>
+  <% } %>
+
+<% posts.forEach(p => { %>
+  <%- include("../partials/post.ejs", {
+    post: p,
+    user: p.by
+  }) %>
+<% }) %>
+
+<%- include("../partials/foot.ejs") %>

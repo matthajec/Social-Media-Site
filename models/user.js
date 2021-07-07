@@ -25,19 +25,27 @@ const userSchema = new Schema(
     },
     blockedList: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     following: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     followers: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
+    lastPostAt: Date,
+    lastPost: {
+      type: Schema.Types.ObjectId,
+      ref: "Post",
+    },
   },
   { timestamps: true }
 );
